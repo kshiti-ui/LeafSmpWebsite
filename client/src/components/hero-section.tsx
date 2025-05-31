@@ -1,8 +1,29 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Leaf, Server, Wifi, Play, Info } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Leaf, Server, Wifi, Play, Info, Copy } from "lucide-react";
 
 export default function HeroSection() {
+  const { toast } = useToast();
+
+  const copyToClipboard = async (text: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: `${type} Copied!`,
+        description: `${text} has been copied to your clipboard`,
+        duration: 2000,
+      });
+    } catch (err) {
+      toast({
+        title: "Copy Failed",
+        description: "Failed to copy to clipboard",
+        variant: "destructive",
+        duration: 2000,
+      });
+    }
+  };
+
   return (
     <section className="relative py-20 px-6">
       {/* Background Effects */}
@@ -33,22 +54,30 @@ export default function HeroSection() {
             Join the Ultimate Minecraft Experience
           </h2>
           <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8">
-            <Card className="bg-card/80 backdrop-blur-sm rounded-lg px-6 py-4 border border-leaf-purple/30">
+            <Card 
+              className="bg-card/80 backdrop-blur-sm rounded-lg px-6 py-4 border border-leaf-purple/30 cursor-pointer hover:border-leaf-purple transition-colors duration-300 group"
+              onClick={() => copyToClipboard("play.leafsmp.org", "Server IP")}
+            >
               <div className="flex items-center space-x-3">
                 <Server className="text-leaf-purple text-xl" />
-                <div>
+                <div className="flex-1">
                   <p className="text-sm text-gray-300">Server IP</p>
                   <p className="font-bold text-lg">play.leafsmp.org</p>
                 </div>
+                <Copy className="text-gray-400 group-hover:text-leaf-purple w-4 h-4 transition-colors duration-300" />
               </div>
             </Card>
-            <Card className="bg-card/80 backdrop-blur-sm rounded-lg px-6 py-4 border border-leaf-orange/30">
+            <Card 
+              className="bg-card/80 backdrop-blur-sm rounded-lg px-6 py-4 border border-leaf-orange/30 cursor-pointer hover:border-leaf-orange transition-colors duration-300 group"
+              onClick={() => copyToClipboard("25590", "Port")}
+            >
               <div className="flex items-center space-x-3">
                 <Wifi className="text-leaf-orange text-xl" />
-                <div>
+                <div className="flex-1">
                   <p className="text-sm text-gray-300">Port</p>
                   <p className="font-bold text-lg">25590</p>
                 </div>
+                <Copy className="text-gray-400 group-hover:text-leaf-orange w-4 h-4 transition-colors duration-300" />
               </div>
             </Card>
           </div>
