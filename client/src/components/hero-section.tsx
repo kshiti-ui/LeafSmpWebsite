@@ -17,10 +17,10 @@ export default function HeroSection() {
               <Leaf className="text-white text-3xl" />
             </div>
             <div className="text-left">
-              <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-leaf-orange via-yellow-400 to-leaf-orange">
+              <h1 className="text-5xl md:text-7xl font-black text-leaf-orange mb-2">
                 LEAF SMP
               </h1>
-              <p className="text-xl md:text-2xl text-leaf-green font-bold tracking-wider mt-2">
+              <p className="text-xl md:text-2xl text-leaf-green font-bold tracking-wider">
                 SEASON 12 LIVE
               </p>
             </div>
