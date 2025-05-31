@@ -50,7 +50,6 @@ export default function FallingLeaves() {
           className="absolute animate-leaf-fall"
           style={{
             left: `${leaf.x}%`,
-            animationDelay: `${leaf.delay}s`,
             animationDuration: `${15 + Math.random() * 10}s`,
           }}
         >
@@ -62,7 +61,6 @@ export default function FallingLeaves() {
             className="animate-leaf-sway"
             style={{
               color: leaf.color,
-              animationDelay: `${leaf.delay * 0.5}s`,
             }}
           >
             <path
