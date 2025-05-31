@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Info, ExternalLink } from "lucide-react";
+import { Check, Info, ExternalLink, Shield, Crown, Skull, Infinity } from "lucide-react";
 import type { RankTier } from "@shared/schema";
 
 export default function RankShowcase() {
@@ -13,6 +13,21 @@ export default function RankShowcase() {
   const handleRankSelect = (rankName: string) => {
     // Open Discord with the understanding that purchases are handled there
     window.open("https://discord.com/invite/PNWCynedgw", "_blank");
+  };
+
+  const getIconComponent = (iconName: string) => {
+    switch (iconName) {
+      case "mask":
+        return Shield;
+      case "crown":
+        return Crown;
+      case "skull":
+        return Skull;
+      case "infinity":
+        return Infinity;
+      default:
+        return Shield;
+    }
   };
 
   if (isLoading) {
@@ -111,6 +126,7 @@ export default function RankShowcase() {
           {ranks?.map((rank, index) => {
             const colorClasses = getRankColorClasses(rank.color);
             const isPopular = rank.id === "immortal";
+            const IconComponent = getIconComponent(rank.icon);
             
             return (
               <Card
@@ -138,7 +154,7 @@ export default function RankShowcase() {
                 <div className="p-6">
                   <div className="text-center mb-6">
                     <div className={`w-16 h-16 mx-auto mb-4 bg-gradient-to-br ${rank.color === "#B10DC9" ? "from-leaf-purple to-purple-600" : rank.color === "#22c55e" ? "from-green-400 to-green-600" : rank.color === "#3b82f6" ? "from-blue-400 to-blue-600" : "from-red-400 to-red-600"} rounded-xl flex items-center justify-center ${isPopular ? "animate-pulse" : ""}`}>
-                      <i className={`${rank.icon} text-white text-2xl`} />
+                      <IconComponent className="text-white text-2xl w-8 h-8" />
                     </div>
                     <h3 className={`text-2xl font-black ${colorClasses.icon} mb-2`}>{rank.name}</h3>
                     <p className="text-gray-400 text-sm">{rank.description}</p>
