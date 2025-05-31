@@ -32,7 +32,7 @@ export default function FallingLeaves() {
           rotation: Math.random() * 360,
           size: Math.random() * 15 + 10,
           speed: Math.random() * 3 + 2,
-          delay: Math.random() * 10,
+          delay: Math.random() * 2,
           color: leafColors[Math.floor(Math.random() * leafColors.length)]
         });
       }
