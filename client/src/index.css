@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --background: 220 10% 10%; /* #1A1A1A */
+  --background: 220 45% 8%; /* Dark blue background */
   --foreground: 0 0% 100%; /* #FFFFFF */
   --muted: 220 10% 16%; /* #2A2A2A */
   --muted-foreground: 220 5% 65%;
@@ -34,7 +34,7 @@
 }
 
 .dark {
-  --background: 220 10% 10%;
+  --background: 220 45% 8%;
   --foreground: 0 0% 100%;
   --muted: 220 10% 16%;
   --muted-foreground: 220 5% 65%;
