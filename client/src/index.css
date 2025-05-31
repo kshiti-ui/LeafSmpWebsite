@@ -114,6 +114,14 @@
   .animate-pulse-slow {
     animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
+
+  .animate-leaf-fall {
+    animation: leafFall linear infinite;
+  }
+
+  .animate-leaf-sway {
+    animation: leafSway 3s ease-in-out infinite;
+  }
 }
 
 @keyframes glow {
@@ -131,5 +139,31 @@
   }
   50% {
     transform: translateY(-10px);
+  }
+}
+
+@keyframes leafFall {
+  0% {
+    transform: translateY(-100vh) translateX(0px) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) translateX(-50px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes leafSway {
+  0%, 100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
   }
 }
