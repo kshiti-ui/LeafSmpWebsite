@@ -14,7 +14,7 @@ export default function Footer() {
             <div className="space-y-2 text-gray-300">
               <p><span className="font-medium">IP:</span> play.leafsmp.org</p>
               <p><span className="font-medium">Port:</span> 25590</p>
-              <p><span className="font-medium">Version:</span> 1.20.x</p>
+              <p><span className="font-medium">Version:</span> 1.21.1</p>
               <p>
                 <span className="font-medium">Status:</span>{" "}
                 <span className="text-leaf-green">Online</span>

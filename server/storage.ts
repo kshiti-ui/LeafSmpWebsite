@@ -25,7 +25,7 @@ export class MemStorage implements IStorage {
       online: true,
       playerCount: 362,
       maxPlayers: 500,
-      version: "1.20.x",
+      version: "1.21.1",
       lastChecked: new Date(),
     };
   }

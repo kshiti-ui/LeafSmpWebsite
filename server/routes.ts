@@ -62,13 +62,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: "NINJA",
         price: 80,
         color: "#22c55e",
-        icon: "fas fa-mask",
+        icon: "mask",
         description: "Stealth & Agility",
         features: [
-          "5 Home Locations",
-          "/fly Command",
+          "3 Home Locations",
           "Green Name Tag",
-          "Priority Join"
+          "Priority Support",
+          "Special Rank Kit",
+          "Full Diamond Armor & Tools",
+          "1 Zombie, 1 Skeleton, 1 Spider Spawner"
         ]
       },
       {
@@ -76,41 +78,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: "MASTER",
         price: 120,
         color: "#3b82f6",
-        icon: "fas fa-crown",
+        icon: "crown",
         description: "Expert Status",
         features: [
           "Everything from Ninja",
-          "10 Home Locations",
-          "/god Command",
-          "Blue Name Tag"
+          "4 Home Locations",
+          "Blue Name Tag",
+          "Priority Support",
+          "Full Diamond Armor & Netherite Pickaxe",
+          "3 Zombie, 3 Skeleton, 3 Spider Spawners"
         ]
       },
       {
         id: "deadliest",
         name: "DEADLIEST",
         price: 150,
-        color: "#ef4444",
-        icon: "fas fa-skull",
+        color: "#B10DC9",
+        icon: "skull",
         description: "Ultimate Power",
         features: [
           "Everything from Master",
-          "15 Home Locations",
-          "/heal Command",
-          "Red Name Tag"
+          "5 Home Locations",
+          "Purple Name Tag",
+          "Priority Support",
+          "Netherite Chestplate & Tools",
+          "5 Spawners + 1 Enderman Spawner"
         ]
       },
       {
         id: "immortal",
         name: "IMMORTAL",
         price: 200,
-        color: "#B10DC9",
-        icon: "fas fa-infinity",
+        color: "#ef4444",
+        icon: "infinity",
         description: "Legendary Status",
         features: [
           "Everything from Deadliest",
-          "Unlimited Homes",
-          "All Commands",
-          "Purple Name Tag"
+          "5 Home Locations",
+          "Red Name Tag",
+          "Priority Support",
+          "Full Netherite Armor & Tools",
+          "8 Spawners + 2 Enderman Spawners"
         ]
       }
     ];

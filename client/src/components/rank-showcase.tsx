@@ -57,15 +57,6 @@ export default function RankShowcase() {
           button: "bg-blue-500 hover:bg-blue-400 text-white",
           check: "text-blue-400"
         };
-      case "#ef4444":
-        return {
-          border: "border-red-500/30 hover:border-red-500",
-          shadow: "hover:shadow-red-500/20",
-          badge: "bg-red-500 text-white",
-          icon: "text-red-400",
-          button: "bg-red-500 hover:bg-red-400 text-white",
-          check: "text-red-400"
-        };
       case "#B10DC9":
         return {
           border: "border-leaf-purple/30 hover:border-leaf-purple",
@@ -74,6 +65,15 @@ export default function RankShowcase() {
           icon: "text-leaf-purple",
           button: "bg-gradient-to-r from-leaf-purple to-purple-600 hover:from-purple-600 hover:to-leaf-purple text-white",
           check: "text-leaf-purple"
+        };
+      case "#ef4444":
+        return {
+          border: "border-red-500/30 hover:border-red-500",
+          shadow: "hover:shadow-red-500/20",
+          badge: "bg-red-500 text-white",
+          icon: "text-red-400",
+          button: "bg-red-500 hover:bg-red-400 text-white",
+          check: "text-red-400"
         };
       default:
         return {
@@ -210,7 +210,7 @@ export default function RankShowcase() {
         </div>
       </div>
       
-      <style jsx>{`
+      <style>{`
         @keyframes fadeInUp {
           to {
             opacity: 1;
