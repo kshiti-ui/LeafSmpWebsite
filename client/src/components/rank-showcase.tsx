@@ -78,7 +78,7 @@ export default function RankShowcase() {
           shadow: "hover:shadow-leaf-purple/20",
           badge: "bg-leaf-purple text-white",
           icon: "text-leaf-purple",
-          button: "bg-gradient-to-r from-leaf-purple to-purple-600 hover:from-purple-600 hover:to-leaf-purple text-white",
+          button: "bg-leaf-purple hover:bg-purple-600 text-white",
           check: "text-leaf-purple"
         };
       case "immortal":
