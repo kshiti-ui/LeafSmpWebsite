@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Leaf, Users, ExternalLink } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Leaf, Users, ExternalLink, BookOpen } from "lucide-react";
 
 interface ServerStatus {
   online: boolean;
@@ -31,13 +32,13 @@ export default function Header() {
                 <Leaf className="text-white text-xl" />
               </div>
               <div>
-                <h1 className="text-2xl font-black text-leaf-orange tracking-wide">LEAFSMP</h1>
+                <h1 className="text-2xl font-black text-leaf-orange tracking-wide">LEAF SMP</h1>
                 <p className="text-xs text-leaf-green font-semibold">SEASON 12 LIVE</p>
               </div>
             </div>
           </div>
           
-          {/* Live Player Counter & Discord Link */}
+          {/* Navigation Links & Discord */}
           <div className="flex items-center space-x-6">
             <div className="bg-card/80 backdrop-blur-sm rounded-lg px-4 py-2 border border-leaf-green/30">
               <div className="flex items-center space-x-2">
@@ -48,6 +49,78 @@ export default function Header() {
                 <span className="text-xs text-gray-400">Players Online</span>
               </div>
             </div>
+            
+            {/* Rules Dialog */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="border-leaf-green/30 hover:border-leaf-green">
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  <span className="hidden md:inline">Rules</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold text-leaf-green">LEAF SMP RULES</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6 mt-6">
+                  <p className="text-gray-300">
+                    Rules for you all and you should follow these rules to not get banned:
+                  </p>
+                  
+                  <div className="space-y-4">
+                    <div className="bg-card/50 p-4 rounded-lg border-l-4 border-red-500">
+                      <h3 className="font-bold text-red-400 mb-2">Hacking is Banned</h3>
+                      <p className="text-gray-300">Hacking is banned and it's unfair for everyone. If you use it, you will get banned.</p>
+                    </div>
+                    
+                    <div className="bg-card/50 p-4 rounded-lg border-l-4 border-red-500">
+                      <h3 className="font-bold text-red-400 mb-2">Duping or Lag Machines</h3>
+                      <p className="text-gray-300">Duping or making lag machines can lead to ban.</p>
+                    </div>
+                    
+                    <div className="bg-card/50 p-4 rounded-lg border-l-4 border-yellow-500">
+                      <h3 className="font-bold text-yellow-400 mb-2">No 18+ Content Posting</h3>
+                      <p className="text-gray-300">No any type of 18+ things in Minecraft server and in Discord can lead to timeout or ban.</p>
+                    </div>
+                    
+                    <div className="bg-card/50 p-4 rounded-lg border-l-4 border-yellow-500">
+                      <h3 className="font-bold text-yellow-400 mb-2">Inappropriate Jokes or Memes</h3>
+                      <p className="text-gray-300">Dark humor can lead to ban. Don't try.</p>
+                    </div>
+                    
+                    <div className="bg-card/50 p-4 rounded-lg border-l-4 border-blue-500">
+                      <h3 className="font-bold text-blue-400 mb-2">No Server or Product Promotions</h3>
+                      <p className="text-gray-300">Promoting other servers, products, or services within the server or Discord is not allowed.</p>
+                    </div>
+                    
+                    <div className="bg-card/50 p-4 rounded-lg border-l-4 border-blue-500">
+                      <h3 className="font-bold text-blue-400 mb-2">One Account per Player</h3>
+                      <p className="text-gray-300">Using multiple accounts to gain unfair advantages is prohibited.</p>
+                    </div>
+                    
+                    <div className="bg-card/50 p-4 rounded-lg border-l-4 border-green-500">
+                      <h3 className="font-bold text-green-400 mb-2">Follow Staff Instructions</h3>
+                      <p className="text-gray-300">Staff decisions are final; arguing or disrespecting staff may lead to penalties.</p>
+                    </div>
+                    
+                    <div className="bg-card/50 p-4 rounded-lg border-l-4 border-green-500">
+                      <h3 className="font-bold text-green-400 mb-2">No Exploiting Glitches</h3>
+                      <p className="text-gray-300">Abusing game glitches or bugs for personal gain is not allowed.</p>
+                    </div>
+                    
+                    <div className="bg-card/50 p-4 rounded-lg border-l-4 border-leaf-purple">
+                      <h3 className="font-bold text-leaf-purple mb-2">Keep Gender Equality</h3>
+                      <p className="text-gray-300">Treat every player with equal respect.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center pt-6 border-t border-gray-800">
+                    <p className="text-leaf-green font-bold">Team Regards -</p>
+                    <p className="text-leaf-orange font-black text-xl mt-2">LEAF TEAM</p>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
             
             {/* Discord Link */}
             <Button

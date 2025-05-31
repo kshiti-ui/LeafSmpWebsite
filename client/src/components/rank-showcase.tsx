@@ -52,9 +52,9 @@ export default function RankShowcase() {
     );
   }
 
-  const getRankColorClasses = (color: string) => {
-    switch (color) {
-      case "#22c55e":
+  const getRankColorClasses = (rankId: string) => {
+    switch (rankId) {
+      case "ninja":
         return {
           border: "border-green-500/30 hover:border-green-500",
           shadow: "hover:shadow-green-500/20",
@@ -63,7 +63,7 @@ export default function RankShowcase() {
           button: "bg-green-500 hover:bg-green-400 text-black",
           check: "text-green-400"
         };
-      case "#3b82f6":
+      case "master":
         return {
           border: "border-blue-500/30 hover:border-blue-500",
           shadow: "hover:shadow-blue-500/20",
@@ -72,7 +72,7 @@ export default function RankShowcase() {
           button: "bg-blue-500 hover:bg-blue-400 text-white",
           check: "text-blue-400"
         };
-      case "#B10DC9":
+      case "deadliest":
         return {
           border: "border-leaf-purple/30 hover:border-leaf-purple",
           shadow: "hover:shadow-leaf-purple/20",
@@ -81,7 +81,7 @@ export default function RankShowcase() {
           button: "bg-gradient-to-r from-leaf-purple to-purple-600 hover:from-purple-600 hover:to-leaf-purple text-white",
           check: "text-leaf-purple"
         };
-      case "#ef4444":
+      case "immortal":
         return {
           border: "border-red-500/30 hover:border-red-500",
           shadow: "hover:shadow-red-500/20",
@@ -124,7 +124,7 @@ export default function RankShowcase() {
         {/* Rank Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {ranks?.map((rank, index) => {
-            const colorClasses = getRankColorClasses(rank.color);
+            const colorClasses = getRankColorClasses(rank.id);
             const isPopular = rank.id === "immortal";
             const IconComponent = getIconComponent(rank.icon);
             
