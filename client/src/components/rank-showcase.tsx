@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Info, ExternalLink, Shield, Crown, Skull, Infinity, Zap } from "lucide-react";
+import { Check, Info, ExternalLink, Shield, Crown, Skull, Infinity } from "lucide-react";
 import type { RankTier } from "@shared/schema";
 
 export default function RankShowcase() {
@@ -18,7 +18,7 @@ export default function RankShowcase() {
   const getIconComponent = (iconName: string) => {
     switch (iconName) {
       case "mask":
-        return Zap;
+        return Shield;
       case "crown":
         return Crown;
       case "skull":
@@ -144,14 +144,16 @@ export default function RankShowcase() {
                     POPULAR
                   </div>
                 )}
+                
                 {/* Price Badge */}
                 <div className={`absolute top-4 right-4 ${colorClasses.badge} px-3 py-1 rounded-full text-sm font-bold`}>
                   ₹{rank.price}
                 </div>
+                
                 {/* Content */}
                 <div className="p-6">
                   <div className="text-center mb-6">
-                    <div className="w-16 h-16 mx-auto mb-4 from-leaf-purple to-purple-600 rounded-xl flex items-center justify-center text-[#ffffff] bg-[#bf08bc]">
+                    <div className={`w-16 h-16 mx-auto mb-4 bg-gradient-to-br ${rank.id === "ninja" ? "from-green-400 to-green-600" : rank.id === "master" ? "from-blue-400 to-blue-600" : rank.id === "deadliest" ? "from-leaf-purple to-purple-600" : "from-red-400 to-red-600"} rounded-xl flex items-center justify-center ${isPopular ? "animate-pulse" : ""}`}>
                       <IconComponent className="text-white text-2xl w-8 h-8" />
                     </div>
                     <h3 className={`text-2xl font-black ${colorClasses.icon} mb-2`}>{rank.name}</h3>
@@ -223,6 +225,7 @@ export default function RankShowcase() {
           </Card>
         </div>
       </div>
+      
       <style>{`
         @keyframes fadeInUp {
           to {
