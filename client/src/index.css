@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 220 10% 10%; /* #1A1A1A */
+  --foreground: 0 0% 100%; /* #FFFFFF */
+  --muted: 220 10% 16%; /* #2A2A2A */
+  --muted-foreground: 220 5% 65%;
+  --popover: 220 10% 16%; /* #2A2A2A */
+  --popover-foreground: 0 0% 100%;
+  --card: 220 10% 16%; /* #2A2A2A */
+  --card-foreground: 0 0% 100%;
+  --border: 220 10% 20%;
+  --input: 220 10% 20%;
+  --primary: 123 70% 50%; /* #2ECC40 */
+  --primary-foreground: 0 0% 0%;
+  --secondary: 220 10% 16%;
+  --secondary-foreground: 0 0% 100%;
+  --accent: 220 10% 20%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 123 70% 50%;
+  --radius: 0.5rem;
+  --leaf-green: 123 70% 50%; /* #2ECC40 */
+  --leaf-orange: 28 100% 55%; /* #FF851B */
+  --leaf-purple: 301 92% 39%; /* #B10DC9 */
+  --chart-1: 123 70% 50%;
+  --chart-2: 28 100% 55%;
+  --chart-3: 301 92% 39%;
+  --chart-4: 217 91% 60%;
+  --chart-5: 27 87% 67%;
+}
+
+.dark {
+  --background: 220 10% 10%;
+  --foreground: 0 0% 100%;
+  --muted: 220 10% 16%;
+  --muted-foreground: 220 5% 65%;
+  --popover: 220 10% 16%;
+  --popover-foreground: 0 0% 100%;
+  --card: 220 10% 16%;
+  --card-foreground: 0 0% 100%;
+  --border: 220 10% 20%;
+  --input: 220 10% 20%;
+  --primary: 123 70% 50%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 220 10% 16%;
+  --secondary-foreground: 0 0% 100%;
+  --accent: 220 10% 20%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 62% 30%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 123 70% 50%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground overflow-x-hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  }
+}
+
+@layer utilities {
+  .text-leaf-green {
+    color: hsl(var(--leaf-green));
+  }
+  
+  .text-leaf-orange {
+    color: hsl(var(--leaf-orange));
+  }
+  
+  .text-leaf-purple {
+    color: hsl(var(--leaf-purple));
+  }
+  
+  .bg-leaf-green {
+    background-color: hsl(var(--leaf-green));
+  }
+  
+  .bg-leaf-orange {
+    background-color: hsl(var(--leaf-orange));
+  }
+  
+  .bg-leaf-purple {
+    background-color: hsl(var(--leaf-purple));
+  }
+  
+  .border-leaf-green {
+    border-color: hsl(var(--leaf-green));
+  }
+  
+  .border-leaf-orange {
+    border-color: hsl(var(--leaf-orange));
+  }
+  
+  .border-leaf-purple {
+    border-color: hsl(var(--leaf-purple));
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px hsl(var(--leaf-green));
+  }
+  to {
+    box-shadow: 0 0 30px hsl(var(--leaf-green)), 0 0 40px hsl(var(--leaf-green));
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
