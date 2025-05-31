@@ -4,11 +4,13 @@ import RankShowcase from "@/components/rank-showcase";
 import ServerStats from "@/components/server-stats";
 import Footer from "@/components/footer";
 import FallingLeaves from "@/components/falling-leaves";
+import AmbientMusic from "@/components/ambient-music";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground relative">
       <FallingLeaves />
+      <AmbientMusic />
       <Header />
       <HeroSection />
       <RankShowcase />
