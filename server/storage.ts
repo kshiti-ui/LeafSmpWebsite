@@ -10,13 +10,22 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
-  private serverStatusData: ServerStatus | undefined;
+  private serverStatusData: ServerStatus | null = {
+    id: 1,
+    ip: "play.leafsmp.org",
+    port: 25590,
+    online: false,
+    playerCount: 0,
+    maxPlayers: 500,
+    version: "1.20.x",
+    lastChecked: new Date(),
+  };
   private currentId: number;
 
   constructor() {
     this.users = new Map();
     this.currentId = 1;
-    
+
     // Initialize with default server status
     this.serverStatusData = {
       id: 1,

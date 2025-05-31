@@ -22,35 +22,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/server/live-status", async (req, res) => {
     try {
       const response = await fetch("https://api.mcsrvstat.us/2/play.leafsmp.org:25590");
-      const data = await response.json();
       
-      if (data && data.online) {
-        const serverStatus = {
-          ip: "play.leafsmp.org",
-          port: 25590,
-          online: data.online,
-          playerCount: data.players?.online || 0,
-          maxPlayers: data.players?.max || 500,
-          version: data.version || "1.20.x"
-        };
-
-        // Update storage with live data
-        await storage.updateServerStatus(serverStatus);
-        res.json(serverStatus);
-      } else {
-        // Server is offline, return cached data
-        const cachedStatus = await storage.getServerStatus();
-        res.json({
-          ...cachedStatus,
-          online: false,
-          playerCount: 0
-        });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      
+      const data = await response.json();
+      console.log("Minecraft API response:", data);
+      
+      const serverStatus = {
+        ip: "play.leafsmp.org",
+        port: 25590,
+        online: data.online || false,
+        playerCount: data.players?.online || 0,
+        maxPlayers: data.players?.max || 500,
+        version: data.version || "1.20.x"
+      };
+
+      // Update storage with live data
+      await storage.updateServerStatus(serverStatus);
+      console.log("Returning server status:", serverStatus);
+      res.json(serverStatus);
+      
     } catch (error) {
       console.error("Error fetching live server status:", error);
-      // Return cached data on error
-      const cachedStatus = await storage.getServerStatus();
-      res.json(cachedStatus);
+      
+      // Return default data on error
+      const defaultStatus = {
+        ip: "play.leafsmp.org",
+        port: 25590,
+        online: false,
+        playerCount: 0,
+        maxPlayers: 500,
+        version: "1.20.x"
+      };
+      
+      res.json(defaultStatus);
     }
   });
 
