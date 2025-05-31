@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Info, ExternalLink, Shield, Crown, Skull, Infinity } from "lucide-react";
+import { Check, Info, ExternalLink, Shield, Crown, Skull, Infinity, Zap } from "lucide-react";
 import type { RankTier } from "@shared/schema";
 
 export default function RankShowcase() {
@@ -18,7 +18,7 @@ export default function RankShowcase() {
   const getIconComponent = (iconName: string) => {
     switch (iconName) {
       case "mask":
-        return Shield;
+        return Zap;
       case "crown":
         return Crown;
       case "skull":
