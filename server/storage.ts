@@ -81,7 +81,7 @@ export class MemStorage implements IStorage {
     const id = this.currentId++;
     const ticketNumber = `LEAF-${this.ticketCounter.toString().padStart(4, '0')}`;
     this.ticketCounter++;
-    
+
     const ticket: Ticket = {
       ...insertTicket,
       id,
@@ -89,7 +89,7 @@ export class MemStorage implements IStorage {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    
+
     this.tickets.set(id, ticket);
     return ticket;
   }
@@ -108,13 +108,13 @@ export class MemStorage implements IStorage {
   async updateTicket(id: number, updates: Partial<Ticket>): Promise<Ticket | undefined> {
     const ticket = this.tickets.get(id);
     if (!ticket) return undefined;
-    
+
     const updatedTicket: Ticket = {
       ...ticket,
       ...updates,
       updatedAt: new Date(),
     };
-    
+
     this.tickets.set(id, updatedTicket);
     return updatedTicket;
   }
