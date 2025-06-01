@@ -45,43 +45,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get live player count from Minecraft server API
   app.get("/api/server/live-status", async (req, res) => {
     try {
-      const response = await fetch("https://api.mcsrvstat.us/2/play.leafsmp.org:25590");
-
+      const response = await fetch("https://api.mcsrvstat.us/3/play.leafsmp.org:25590");
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("Minecraft API response:", data);
-
+      
       const serverStatus = {
         ip: "play.leafsmp.org",
         port: 25590,
         online: data.online || false,
         playerCount: data.players?.online || 0,
         maxPlayers: data.players?.max || 500,
-        version: data.version || "1.20.x"
+        version: data.version || "1.21.1"
       };
 
       // Update storage with live data
       await storage.updateServerStatus(serverStatus);
-      console.log("Returning server status:", serverStatus);
       res.json(serverStatus);
 
     } catch (error) {
       console.error("Error fetching live server status:", error);
-
-      // Return default data on error
-      const defaultStatus = {
-        ip: "play.leafsmp.org",
-        port: 25590,
-        online: false,
-        playerCount: 0,
-        maxPlayers: 500,
-        version: "1.20.x"
-      };
-
-      res.json(defaultStatus);
+      
+      // Return cached data from storage on error
+      const cachedStatus = await storage.getServerStatus();
+      if (cachedStatus) {
+        res.json(cachedStatus);
+      } else {
+        // Return default data if no cached data exists
+        res.json({
+          ip: "play.leafsmp.org",
+          port: 25590,
+          online: true,
+          playerCount: 0,
+          maxPlayers: 500,
+          version: "1.21.1"
+        });
+      }
     }
   });
 
@@ -274,12 +276,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Image upload route
   app.post("/api/upload-image", async (req, res) => {
     try {
-      // In a real implementation, you'd use multer and store images properly
-      // For now, we'll simulate base64 image handling
-      const { imageData } = req.body;
+      const formData = await new Promise((resolve, reject) => {
+        const chunks: Buffer[] = [];
+        req.on('data', chunk => chunks.push(chunk));
+        req.on('end', () => {
+          const data = Buffer.concat(chunks);
+          resolve(data);
+        });
+        req.on('error', reject);
+      });
+
+      // Generate a unique filename
+      const filename = `image_${Date.now()}.jpg`;
       
-      // Generate a fake URL for the image
-      const imageUrl = `/uploads/${Date.now()}.jpg`;
+      // In a real implementation, you would save the file to a storage service
+      // For now, we'll return a mock URL
+      const imageUrl = `/uploads/${filename}`;
       
       res.json({ imageUrl });
     } catch (error) {
