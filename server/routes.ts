@@ -22,14 +22,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/server/live-status", async (req, res) => {
     try {
       const response = await fetch("https://api.mcsrvstat.us/2/play.leafsmp.org:25590");
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       console.log("Minecraft API response:", data);
-      
+
       const serverStatus = {
         ip: "play.leafsmp.org",
         port: 25590,
@@ -43,10 +43,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.updateServerStatus(serverStatus);
       console.log("Returning server status:", serverStatus);
       res.json(serverStatus);
-      
+
     } catch (error) {
       console.error("Error fetching live server status:", error);
-      
+
       // Return default data on error
       const defaultStatus = {
         ip: "play.leafsmp.org",
@@ -56,7 +56,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         maxPlayers: 500,
         version: "1.20.x"
       };
-      
+
       res.json(defaultStatus);
     }
   });
@@ -133,61 +133,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(ranks);
   });
 
-  // Create a new ticket
+  // Ticket routes
   app.post("/api/tickets", async (req, res) => {
     try {
-      const ticketData = insertTicketSchema.parse(req.body);
-      const ticket = await storage.createTicket(ticketData);
+      const ticketData = req.body;
+      const ticket = await storage.createTicket({
+        ...ticketData,
+        status: "open",
+        priority: "normal",
+        category: "rank_purchase",
+      });
       res.json(ticket);
     } catch (error) {
       console.error("Error creating ticket:", error);
-      res.status(400).json({ message: "Invalid ticket data" });
+      res.status(500).json({ error: "Failed to create ticket" });
     }
   });
 
-  // Get user tickets
   app.get("/api/user-tickets", async (req, res) => {
     try {
       const { minecraft, discord } = req.query;
-      
       if (!minecraft || !discord) {
-        return res.status(400).json({ message: "Minecraft and Discord usernames are required" });
+        return res.status(400).json({ error: "Both minecraft and discord usernames are required" });
       }
-
       const tickets = await storage.getUserTickets(minecraft as string, discord as string);
       res.json(tickets);
     } catch (error) {
       console.error("Error fetching user tickets:", error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ error: "Failed to fetch tickets" });
     }
   });
 
-  // Admin: Get all tickets
   app.get("/api/admin/tickets", async (req, res) => {
     try {
       const tickets = await storage.getAllTickets();
       res.json(tickets);
     } catch (error) {
-      console.error("Error fetching all tickets:", error);
-      res.status(500).json({ message: "Internal server error" });
+      console.error("Error fetching admin tickets:", error);
+      res.status(500).json({ error: "Failed to fetch tickets" });
     }
   });
 
-  // Admin: Update ticket
   app.patch("/api/admin/tickets/:id", async (req, res) => {
     try {
       const ticketId = parseInt(req.params.id);
       const updates = req.body;
-      
       const ticket = await storage.updateTicket(ticketId, updates);
       if (!ticket) {
-        return res.status(404).json({ message: "Ticket not found" });
+        return res.status(404).json({ error: "Ticket not found" });
       }
-      
       res.json(ticket);
     } catch (error) {
       console.error("Error updating ticket:", error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ error: "Failed to update ticket" });
     }
   });
 
