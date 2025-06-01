@@ -1,15 +1,18 @@
-
 import { useState, useEffect, useRef } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Send, Image, X, MessageSquare, Clock } from "lucide-react";
-import { format } from "date-fns";
+import { Card, CardContent } from "@/components/ui/card";
+import { Send, Image, X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import type { ChatMessage } from "@shared/schema";
+
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { MessageSquare, Clock } from "lucide-react";
+import { format } from "date-fns";
 
 interface ChatWindowProps {
   ticketId: number;
@@ -37,7 +40,7 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
           headers.Authorization = `Bearer ${token}`;
         }
       }
-      
+
       const response = await fetch(`/api/tickets/${ticketId}/messages`, { headers });
       if (!response.ok) throw new Error("Failed to fetch messages");
       return response.json();
@@ -84,7 +87,7 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append("image", file);
-      
+
       // Convert to base64 for demo purposes
       const reader = new FileReader();
       return new Promise<string>((resolve, reject) => {
@@ -115,7 +118,7 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
         toast({ title: "Error", description: "Please select an image file", variant: "destructive" });
         return;
       }
-      
+
       // Check file size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
         toast({ title: "Error", description: "Image size must be less than 5MB", variant: "destructive" });
@@ -134,7 +137,7 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
 
     try {
       let imageUrl: string | undefined;
-      
+
       if (selectedImage) {
         imageUrl = await uploadImageMutation.mutateAsync(selectedImage);
       }
@@ -164,7 +167,7 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
           <span>Chat</span>
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent className="flex-1 flex flex-col space-y-3 p-4">
         {/* Messages */}
         <div className="flex-1 overflow-y-auto space-y-3 pr-2">
@@ -197,9 +200,9 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
                     </Badge>
                     <span className="text-xs opacity-70">{msg.senderName}</span>
                   </div>
-                  
+
                   {msg.message && <p className="text-sm">{msg.message}</p>}
-                  
+
                   {msg.imageUrl && (
                     <div className="mt-2">
                       <img
@@ -210,7 +213,7 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
                       />
                     </div>
                   )}
-                  
+
                   <div className="flex items-center space-x-1 mt-2 text-xs opacity-60">
                     <Clock className="w-3 h-3" />
                     <span>{format(new Date(msg.createdAt), "HH:mm")}</span>
@@ -258,7 +261,7 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
               }}
             />
           </div>
-          
+
           <div className="flex flex-col space-y-1">
             <Button
               onClick={() => fileInputRef.current?.click()}
@@ -268,7 +271,7 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
             >
               <Image className="w-4 h-4" />
             </Button>
-            
+
             <Button
               onClick={handleSendMessage}
               size="sm"

@@ -13,6 +13,7 @@ import type { Ticket } from "@shared/schema";
 export default function Tickets() {
   const [minecraftUsername, setMinecraftUsername] = useState("");
   const [discordUsername, setDiscordUsername] = useState("");
+  const [showTickets, setShowTickets] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedTicketForChat, setSelectedTicketForChat] = useState<Ticket | null>(null);
   const { toast } = useToast();

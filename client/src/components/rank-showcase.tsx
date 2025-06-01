@@ -8,14 +8,16 @@ import { TicketPopup } from "./ticket-popup";
 import type { RankTier } from "@shared/schema";
 
 export default function RankShowcase() {
+  const [selectedRank, setSelectedRank] = useState<string | null>(null);
   const [showTicketPopup, setShowTicketPopup] = useState(false);
-  const [selectedRank, setSelectedRank] = useState("");
 
-  const { data: ranks = [], isLoading } = useQuery<RankTier[]>({
+  const { data: ranks = [], isLoading } = useQuery({
     queryKey: ["/api/ranks"],
     queryFn: async () => {
       const response = await fetch("/api/ranks");
-      if (!response.ok) throw new Error("Failed to fetch ranks");
+      if (!response.ok) {
+        throw new Error("Failed to fetch ranks");
+      }
       return response.json();
     },
   });
