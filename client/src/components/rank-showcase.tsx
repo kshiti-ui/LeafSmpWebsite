@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Check, Crown, Mask, Skull, Infinity } from "lucide-react";
+import { Check, Crown, Mask, Skull, Infinity, Info, Shield } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { TicketPopup } from "./ticket-popup";
 import type { RankTier } from "@shared/schema";
@@ -10,7 +10,7 @@ export default function RankShowcase() {
   const [showTicketPopup, setShowTicketPopup] = useState(false);
   const [selectedRank, setSelectedRank] = useState("");
 
-  const { data: ranks = [] } = useQuery<RankTier[]>({
+  const { data: ranks = [], isLoading } = useQuery<RankTier[]>({
     queryKey: ["/api/ranks"],
     queryFn: async () => {
       const response = await fetch("/api/ranks");
