@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Check, Crown, Mask, Skull, Infinity, Info, Shield } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { TicketPopup } from "./ticket-popup";
