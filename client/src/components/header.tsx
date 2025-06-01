@@ -41,6 +41,21 @@ export default function Header() {
 
           {/* Navigation Links & Discord */}
           <div className="flex items-center space-x-6">
+            {/* Navigation Links */}
+            <div className="flex items-center space-x-4">
+              <Link href="/tickets">
+                <Button variant="ghost" size="sm" className="text-leaf-green hover:text-leaf-orange">
+                  <Ticket className="w-4 h-4 mr-2" />
+                  My Tickets
+                </Button>
+              </Link>
+              <Link href="/admin">
+                <Button variant="ghost" size="sm" className="text-leaf-purple hover:text-leaf-orange">
+                  <Users className="w-4 h-4 mr-2" />
+                  Admin
+                </Button>
+              </Link>
+            </div>
             <div className="bg-card/80 backdrop-blur-sm rounded-lg px-4 py-2 border border-leaf-green/30">
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 bg-leaf-green rounded-full animate-pulse" />
