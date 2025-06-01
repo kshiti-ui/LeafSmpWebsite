@@ -61,6 +61,8 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        "leaf-purple": "#B10DC9",
+        "leaf-orange": "#FF9500",
       },
       keyframes: {
         "accordion-down": {

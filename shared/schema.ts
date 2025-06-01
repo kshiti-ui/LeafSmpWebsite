@@ -34,6 +34,30 @@ export type User = typeof users.$inferSelect;
 export type ServerStatus = typeof serverStatus.$inferSelect;
 export type InsertServerStatus = z.infer<typeof insertServerStatusSchema>;
 
+export const tickets = pgTable("tickets", {
+  id: serial("id").primaryKey(),
+  ticketNumber: text("ticket_number").notNull().unique(),
+  minecraftUsername: text("minecraft_username").notNull(),
+  discordUsername: text("discord_username").notNull(),
+  selectedRank: text("selected_rank").notNull(),
+  status: text("status").notNull().default("open"), // open, in_progress, closed
+  priority: text("priority").notNull().default("normal"), // low, normal, high, urgent
+  category: text("category").notNull().default("rank_purchase"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  adminNotes: text("admin_notes"),
+});
+
+export const insertTicketSchema = createInsertSchema(tickets).omit({
+  id: true,
+  ticketNumber: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type Ticket = typeof tickets.$inferSelect;
+export type InsertTicket = z.infer<typeof insertTicketSchema>;
+
 export interface RankTier {
   id: string;
   name: string;

@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertServerStatusSchema } from "@shared/schema";
+import { insertServerStatusSchema, insertTicketSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get server status
@@ -131,6 +131,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
     ];
 
     res.json(ranks);
+  });
+
+  // Create a new ticket
+  app.post("/api/tickets", async (req, res) => {
+    try {
+      const ticketData = insertTicketSchema.parse(req.body);
+      const ticket = await storage.createTicket(ticketData);
+      res.json(ticket);
+    } catch (error) {
+      console.error("Error creating ticket:", error);
+      res.status(400).json({ message: "Invalid ticket data" });
+    }
+  });
+
+  // Get user tickets
+  app.get("/api/user-tickets", async (req, res) => {
+    try {
+      const { minecraft, discord } = req.query;
+      
+      if (!minecraft || !discord) {
+        return res.status(400).json({ message: "Minecraft and Discord usernames are required" });
+      }
+
+      const tickets = await storage.getUserTickets(minecraft as string, discord as string);
+      res.json(tickets);
+    } catch (error) {
+      console.error("Error fetching user tickets:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Admin: Get all tickets
+  app.get("/api/admin/tickets", async (req, res) => {
+    try {
+      const tickets = await storage.getAllTickets();
+      res.json(tickets);
+    } catch (error) {
+      console.error("Error fetching all tickets:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Admin: Update ticket
+  app.patch("/api/admin/tickets/:id", async (req, res) => {
+    try {
+      const ticketId = parseInt(req.params.id);
+      const updates = req.body;
+      
+      const ticket = await storage.updateTicket(ticketId, updates);
+      if (!ticket) {
+        return res.status(404).json({ message: "Ticket not found" });
+      }
+      
+      res.json(ticket);
+    } catch (error) {
+      console.error("Error updating ticket:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
   });
 
   const httpServer = createServer(app);

@@ -1,18 +1,27 @@
-import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Check, Info, ExternalLink, Shield, Crown, Skull, Infinity } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Check, Crown, Mask, Skull, Infinity } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { TicketPopup } from "./ticket-popup";
 import type { RankTier } from "@shared/schema";
 
 export default function RankShowcase() {
-  const { data: ranks, isLoading } = useQuery<RankTier[]>({
+  const [showTicketPopup, setShowTicketPopup] = useState(false);
+  const [selectedRank, setSelectedRank] = useState("");
+
+  const { data: ranks = [] } = useQuery<RankTier[]>({
     queryKey: ["/api/ranks"],
+    queryFn: async () => {
+      const response = await fetch("/api/ranks");
+      if (!response.ok) throw new Error("Failed to fetch ranks");
+      return response.json();
+    },
   });
 
   const handleRankSelect = (rankName: string) => {
-    // Open Discord with the understanding that purchases are handled there
-    window.open("https://discord.com/invite/PNWCynedgw", "_blank");
+    setSelectedRank(rankName);
+    setShowTicketPopup(true);
   };
 
   const getIconComponent = (iconName: string) => {
@@ -127,7 +136,7 @@ export default function RankShowcase() {
             const colorClasses = getRankColorClasses(rank.id);
             const isPopular = rank.id === "immortal";
             const IconComponent = getIconComponent(rank.icon);
-            
+
             return (
               <Card
                 key={rank.id}
@@ -144,12 +153,12 @@ export default function RankShowcase() {
                     POPULAR
                   </div>
                 )}
-                
+
                 {/* Price Badge */}
                 <div className={`absolute top-4 right-4 ${colorClasses.badge} px-3 py-1 rounded-full text-sm font-bold`}>
                   ₹{rank.price}
                 </div>
-                
+
                 {/* Content */}
                 <div className="p-6">
                   <div className="text-center mb-6">
@@ -159,7 +168,7 @@ export default function RankShowcase() {
                     <h3 className={`text-2xl font-black ${colorClasses.icon} mb-2`}>{rank.name}</h3>
                     <p className="text-gray-400 text-sm">{rank.description}</p>
                   </div>
-                  
+
                   <div className="space-y-3 mb-6">
                     {rank.features.map((feature, featureIndex) => (
                       <div key={featureIndex} className="flex items-center space-x-2 text-sm">
@@ -168,7 +177,7 @@ export default function RankShowcase() {
                       </div>
                     ))}
                   </div>
-                  
+
                   <Button
                     onClick={() => handleRankSelect(rank.name)}
                     className={`w-full ${colorClasses.button} font-bold py-3 rounded-lg transition-all duration-300 transform group-hover:scale-105`}
@@ -203,7 +212,7 @@ export default function RankShowcase() {
                 <p className="text-gray-300">Complete payment and enjoy your new perks!</p>
               </div>
             </div>
-            
+
             <div className="mt-6">
               <Button
                 asChild
@@ -225,7 +234,7 @@ export default function RankShowcase() {
           </Card>
         </div>
       </div>
-      
+
       <style>{`
         @keyframes fadeInUp {
           to {
@@ -234,6 +243,11 @@ export default function RankShowcase() {
           }
         }
       `}</style>
+      <TicketPopup
+        isOpen={showTicketPopup}
+        onClose={() => setShowTicketPopup(false)}
+        selectedRank={selectedRank}
+      />
     </section>
   );
 }
