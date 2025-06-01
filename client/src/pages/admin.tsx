@@ -1,21 +1,24 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Grid, List, Calendar, Clock, User, MessageSquare, Filter } from "lucide-react";
+import { Grid, List, Calendar, Clock, User, MessageSquare, Filter, LogOut, X } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
+import { ChatWindow } from "@/components/chat-window";
 import type { Ticket } from "@shared/schema";
 
 type ViewMode = "grid" | "list";
 type SortBy = "created_date" | "priority" | "status";
 
 export default function Admin() {
+  const [, setLocation] = useLocation();
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [sortBy, setSortBy] = useState<SortBy>("created_date");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -23,13 +26,43 @@ export default function Admin() {
   const [editingTicket, setEditingTicket] = useState<string | null>(null);
   const [adminNotes, setAdminNotes] = useState("");
   const [ticketStatus, setTicketStatus] = useState("");
+  const [selectedTicketForChat, setSelectedTicketForChat] = useState<Ticket | null>(null);
+  const [adminName, setAdminName] = useState("");
   const { toast } = useToast();
+
+  useEffect(() => {
+    const token = localStorage.getItem("adminToken");
+    const username = localStorage.getItem("adminUser");
+    if (!token) {
+      setLocation("/admin/login");
+      return;
+    }
+    if (username) {
+      setAdminName(username);
+    }
+  }, [setLocation]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("adminUser");
+    toast({ title: "Success", description: "Logged out successfully" });
+    setLocation("/admin/login");
+  };
 
   const { data: tickets = [], refetch } = useQuery<Ticket[]>({
     queryKey: ["/api/admin/tickets"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/tickets");
-      if (!response.ok) throw new Error("Failed to fetch tickets");
+      const token = localStorage.getItem("adminToken");
+      const response = await fetch("/api/admin/tickets", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!response.ok) {
+        if (response.status === 401) {
+          setLocation("/admin/login");
+          throw new Error("Unauthorized");
+        }
+        throw new Error("Failed to fetch tickets");
+      }
       return response.json();
     },
   });
@@ -54,9 +87,13 @@ export default function Admin() {
 
   const updateTicket = async (ticketId: string, updates: { status?: string; adminNotes?: string }) => {
     try {
+      const token = localStorage.getItem("adminToken");
       const response = await fetch(`/api/admin/tickets/${ticketId}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify(updates),
       });
 
@@ -194,14 +231,25 @@ export default function Admin() {
                   <p className="text-gray-400 text-sm">{ticket.adminNotes}</p>
                 </div>
               )}
-              <Button
-                onClick={() => startEditing(ticket)}
-                variant="outline"
-                size="sm"
-                className="border-gray-600 text-gray-300 hover:bg-gray-700"
-              >
-                Edit Ticket
-              </Button>
+              <div className="flex space-x-2">
+                <Button
+                  onClick={() => startEditing(ticket)}
+                  variant="outline"
+                  size="sm"
+                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                >
+                  Edit Ticket
+                </Button>
+                <Button
+                  onClick={() => setSelectedTicketForChat(ticket)}
+                  variant="outline"
+                  size="sm"
+                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                >
+                  <MessageSquare className="w-4 h-4 mr-1" />
+                  Chat
+                </Button>
+              </div>
             </div>
           )}
         </div>
@@ -214,7 +262,24 @@ export default function Admin() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-4">Admin Portal</h1>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex-1" />
+              <h1 className="text-4xl font-bold text-white">Admin Portal</h1>
+              <div className="flex-1 flex justify-end">
+                <div className="flex items-center space-x-4">
+                  <span className="text-gray-300">Welcome, {adminName}</span>
+                  <Button
+                    onClick={handleLogout}
+                    variant="outline"
+                    size="sm"
+                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </Button>
+                </div>
+              </div>
+            </div>
             <p className="text-gray-300">Manage and track all rank purchase tickets</p>
           </div>
 
@@ -333,6 +398,38 @@ export default function Admin() {
           </div>
         </div>
       </div>
+
+      {/* Chat Modal */}
+      {selectedTicketForChat && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-900 rounded-lg p-6 w-full max-w-2xl h-[600px] flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-white">
+                Chat - Ticket #{selectedTicketForChat.ticketNumber}
+              </h3>
+              <Button
+                onClick={() => setSelectedTicketForChat(null)}
+                variant="ghost"
+                size="sm"
+                className="text-gray-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+            <div className="flex-1">
+              <ChatWindow
+                ticketId={selectedTicketForChat.id}
+                isAdmin={true}
+                adminName={adminName}
+                userNames={{
+                  minecraft: selectedTicketForChat.minecraftUsername,
+                  discord: selectedTicketForChat.discordUsername,
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

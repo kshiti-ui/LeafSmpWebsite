@@ -58,6 +58,24 @@ export const insertTicketSchema = createInsertSchema(tickets).omit({
 export type Ticket = typeof tickets.$inferSelect;
 export type InsertTicket = z.infer<typeof insertTicketSchema>;
 
+export const chatMessages = pgTable("chat_messages", {
+  id: serial("id").primaryKey(),
+  ticketId: integer("ticket_id").notNull(),
+  sender: text("sender").notNull(), // 'user' or 'admin'
+  senderName: text("sender_name").notNull(),
+  message: text("message").notNull(),
+  imageUrl: text("image_url"), // For image attachments
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+
 export interface RankTier {
   id: string;
   name: string;

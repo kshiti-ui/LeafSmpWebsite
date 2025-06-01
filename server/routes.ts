@@ -2,6 +2,30 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertServerStatusSchema, insertTicketSchema } from "@shared/schema";
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = "leafsmp-admin-secret-key-2024";
+const ADMIN_CREDENTIALS = [
+  { username: "Kanhaiya", password: "NcY42#1gdh" },
+  { username: "Rondieeno", password: "Mskle7&3@hg" }
+];
+
+// Middleware to verify admin token
+const verifyAdminToken = (req: any, res: any, next: any) => {
+  const token = req.headers.authorization?.replace("Bearer ", "");
+  
+  if (!token) {
+    return res.status(401).json({ error: "No token provided" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    req.admin = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: "Invalid token" });
+  }
+};
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get server status
@@ -133,6 +157,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(ranks);
   });
 
+  // Admin authentication
+  app.post("/api/admin/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      const admin = ADMIN_CREDENTIALS.find(
+        cred => cred.username === username && cred.password === password
+      );
+
+      if (!admin) {
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      const token = jwt.sign(
+        { username: admin.username, role: "admin" },
+        JWT_SECRET,
+        { expiresIn: "24h" }
+      );
+
+      res.json({ token, username: admin.username });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Login failed" });
+    }
+  });
+
   // Ticket routes
   app.post("/api/tickets", async (req, res) => {
     try {
@@ -164,7 +214,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/tickets", async (req, res) => {
+  app.get("/api/admin/tickets", verifyAdminToken, async (req, res) => {
     try {
       const tickets = await storage.getAllTickets();
       res.json(tickets);
@@ -174,7 +224,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/admin/tickets/:id", async (req, res) => {
+  app.patch("/api/admin/tickets/:id", verifyAdminToken, async (req, res) => {
     try {
       const ticketId = parseInt(req.params.id);
       const updates = req.body;
@@ -186,6 +236,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating ticket:", error);
       res.status(500).json({ error: "Failed to update ticket" });
+    }
+  });
+
+  // Chat routes
+  app.post("/api/tickets/:id/messages", async (req, res) => {
+    try {
+      const ticketId = parseInt(req.params.id);
+      const { sender, senderName, message, imageUrl } = req.body;
+      
+      const chatMessage = await storage.addChatMessage({
+        ticketId,
+        sender,
+        senderName,
+        message,
+        imageUrl,
+      });
+      
+      res.json(chatMessage);
+    } catch (error) {
+      console.error("Error adding chat message:", error);
+      res.status(500).json({ error: "Failed to add message" });
+    }
+  });
+
+  app.get("/api/tickets/:id/messages", async (req, res) => {
+    try {
+      const ticketId = parseInt(req.params.id);
+      const messages = await storage.getChatMessages(ticketId);
+      res.json(messages);
+    } catch (error) {
+      console.error("Error fetching chat messages:", error);
+      res.status(500).json({ error: "Failed to fetch messages" });
+    }
+  });
+
+  // Image upload route
+  app.post("/api/upload-image", async (req, res) => {
+    try {
+      // In a real implementation, you'd use multer and store images properly
+      // For now, we'll simulate base64 image handling
+      const { imageData } = req.body;
+      
+      // Generate a fake URL for the image
+      const imageUrl = `/uploads/${Date.now()}.jpg`;
+      
+      res.json({ imageUrl });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      res.status(500).json({ error: "Failed to upload image" });
     }
   });
 

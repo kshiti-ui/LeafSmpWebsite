@@ -1,4 +1,4 @@
-import { users, serverStatus, type User, type InsertUser, type ServerStatus, type InsertServerStatus, type Ticket, type InsertTicket } from "@shared/schema";
+import { users, serverStatus, type User, type InsertUser, type ServerStatus, type InsertServerStatus, type Ticket, type InsertTicket, type ChatMessage, type InsertChatMessage } from "@shared/schema";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -10,11 +10,14 @@ export interface IStorage {
   getUserTickets(minecraftUsername: string, discordUsername: string): Promise<Ticket[]>;
   getAllTickets(): Promise<Ticket[]>;
   updateTicket(id: number, updates: Partial<Ticket>): Promise<Ticket | undefined>;
+  addChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+  getChatMessages(ticketId: number): Promise<ChatMessage[]>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private tickets: Map<number, Ticket>;
+  private chatMessages: Map<number, ChatMessage>;
   private serverStatusData: ServerStatus | null = {
     id: 1,
     ip: "play.leafsmp.org",
@@ -31,6 +34,7 @@ export class MemStorage implements IStorage {
   constructor() {
     this.users = new Map();
     this.tickets = new Map();
+    this.chatMessages = new Map();
     this.currentId = 1;
     this.ticketCounter = 1;
 
@@ -117,6 +121,24 @@ export class MemStorage implements IStorage {
     
     this.tickets.set(id, updatedTicket);
     return updatedTicket;
+  }
+
+  async addChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
+    const id = this.currentId++;
+    const message: ChatMessage = {
+      ...insertMessage,
+      id,
+      createdAt: new Date(),
+    };
+    
+    this.chatMessages.set(id, message);
+    return message;
+  }
+
+  async getChatMessages(ticketId: number): Promise<ChatMessage[]> {
+    return Array.from(this.chatMessages.values())
+      .filter(message => message.ticketId === ticketId)
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   }
 }
 
