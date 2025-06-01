@@ -19,9 +19,10 @@ interface ChatWindowProps {
   isAdmin?: boolean;
   adminName?: string;
   userNames?: { minecraft: string; discord: string };
+  ticketStatus?: string;
 }
 
-export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: ChatWindowProps) {
+export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames, ticketStatus }: ChatWindowProps) {
   const [message, setMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -29,6 +30,8 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const isClosed = ticketStatus === "closed";
 
   const { data: messages = [] } = useQuery<ChatMessage[]>({
     queryKey: [`/api/tickets/${ticketId}/messages`],
@@ -45,7 +48,7 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
       if (!response.ok) throw new Error("Failed to fetch messages");
       return response.json();
     },
-    refetchInterval: 3000, // Poll every 3 seconds for new messages
+    refetchInterval: 3000,
   });
 
   const sendMessageMutation = useMutation({
@@ -88,21 +91,17 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
       const formData = new FormData();
       formData.append("image", file);
 
-      // Convert to base64 for demo purposes
-      const reader = new FileReader();
-      return new Promise<string>((resolve, reject) => {
-        reader.onload = () => {
-          fetch("/api/upload-image", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ imageData: reader.result }),
-          })
-            .then(res => res.json())
-            .then(data => resolve(data.imageUrl))
-            .catch(reject);
-        };
-        reader.readAsDataURL(file);
+      const response = await fetch("/api/upload-image", {
+        method: "POST",
+        body: formData,
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const data = await response.json();
+      return data.imageUrl;
     },
   });
 
@@ -133,6 +132,11 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
   };
 
   const handleSendMessage = async () => {
+    if (isClosed) {
+      toast({ title: "Error", description: "Cannot send messages in a closed ticket", variant: "destructive" });
+      return;
+    }
+
     if (!message.trim() && !selectedImage) return;
 
     try {
@@ -165,6 +169,9 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
         <CardTitle className="text-white flex items-center space-x-2">
           <MessageSquare className="w-5 h-5" />
           <span>Chat</span>
+          {isClosed && (
+            <Badge variant="destructive">Closed</Badge>
+          )}
         </CardTitle>
       </CardHeader>
 
@@ -250,9 +257,10 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
             <Textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type your message..."
+              placeholder={isClosed ? "This ticket is closed" : "Type your message..."}
               className="bg-gray-700 border-gray-600 text-white resize-none"
               rows={2}
+              disabled={isClosed}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -268,6 +276,7 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
               size="sm"
               variant="outline"
               className="border-gray-600 text-gray-300 hover:bg-gray-700"
+              disabled={isClosed}
             >
               <Image className="w-4 h-4" />
             </Button>
@@ -276,7 +285,7 @@ export function ChatWindow({ ticketId, isAdmin = false, adminName, userNames }: 
               onClick={handleSendMessage}
               size="sm"
               className="bg-leaf-purple hover:bg-purple-700"
-              disabled={sendMessageMutation.isPending || (!message.trim() && !selectedImage)}
+              disabled={isClosed || sendMessageMutation.isPending || (!message.trim() && !selectedImage)}
             >
               <Send className="w-4 h-4" />
             </Button>
