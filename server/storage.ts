@@ -6,15 +6,10 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   getServerStatus(): Promise<ServerStatus | undefined>;
   updateServerStatus(status: InsertServerStatus): Promise<ServerStatus>;
-  createTicket(ticket: InsertTicket): Promise<Ticket>;
-  getUserTickets(minecraftUsername: string, discordUsername: string): Promise<Ticket[]>;
-  getAllTickets(): Promise<Ticket[]>;
-  updateTicket(id: number, updates: Partial<Ticket>): Promise<Ticket | undefined>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
-  private tickets: Map<number, Ticket>;
   private serverStatusData: ServerStatus | null = {
     id: 1,
     ip: "play.leafsmp.org",
@@ -26,13 +21,10 @@ export class MemStorage implements IStorage {
     lastChecked: new Date(),
   };
   private currentId: number;
-  private ticketCounter: number;
 
   constructor() {
     this.users = new Map();
-    this.tickets = new Map();
     this.currentId = 1;
-    this.ticketCounter = 1;
 
     // Initialize with default server status
     this.serverStatusData = {
@@ -75,48 +67,6 @@ export class MemStorage implements IStorage {
       lastChecked: new Date(),
     };
     return this.serverStatusData;
-  }
-
-  async createTicket(insertTicket: InsertTicket): Promise<Ticket> {
-    const id = this.currentId++;
-    const ticketNumber = `LEAF-${this.ticketCounter.toString().padStart(4, '0')}`;
-    this.ticketCounter++;
-
-    const ticket: Ticket = {
-      ...insertTicket,
-      id,
-      ticketNumber,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    this.tickets.set(id, ticket);
-    return ticket;
-  }
-
-  async getUserTickets(minecraftUsername: string, discordUsername: string): Promise<Ticket[]> {
-    return Array.from(this.tickets.values()).filter(
-      ticket => ticket.minecraftUsername === minecraftUsername && 
-                ticket.discordUsername === discordUsername
-    );
-  }
-
-  async getAllTickets(): Promise<Ticket[]> {
-    return Array.from(this.tickets.values());
-  }
-
-  async updateTicket(id: number, updates: Partial<Ticket>): Promise<Ticket | undefined> {
-    const ticket = this.tickets.get(id);
-    if (!ticket) return undefined;
-
-    const updatedTicket: Ticket = {
-      ...ticket,
-      ...updates,
-      updatedAt: new Date(),
-    };
-
-    this.tickets.set(id, updatedTicket);
-    return updatedTicket;
   }
 }
 
